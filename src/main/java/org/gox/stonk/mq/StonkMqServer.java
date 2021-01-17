@@ -34,16 +34,21 @@ public class StonkMqServer {
 
     public void startMonitorThread(){
         Runnable task = () -> {
-            int queueSize = -1;
+            boolean isFull = false;
             while(true) {
-                if(queueSize != queue.size()){
-                    queueSize = queue.size();
-                    System.out.println("Queue size " + queue.size() + ((queue.remainingCapacity() == 0) ? " (it's full)": ""));
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                System.out.println("Queue size = " + queue.size());
+                if(!isFull){
+                    if(queue.remainingCapacity() == 0) {
+                        System.out.println("Queue is full ! (capacity: " + queue.size() + ")");
+                        isFull = true;
+                    } else {
+                        isFull = false;
                     }
+                }
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         };

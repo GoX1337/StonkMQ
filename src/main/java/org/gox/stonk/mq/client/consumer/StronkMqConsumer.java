@@ -18,25 +18,13 @@ public class StronkMqConsumer {
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(clientSocket.getOutputStream(), true);
         out.println("consumer");
-        startHeartbeatTread();
-    }
-
-    private void startHeartbeatTread() {
-        new Thread(() -> {
-            out.println("heartbeat");
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        ).start();
     }
 
     private void listen() throws IOException {
         String message = "";
         while ((message = in.readLine()) != null) {
             System.out.println(Instant.now() + ": " + message);
+            out.println("READ_ACK");
         }
     }
 

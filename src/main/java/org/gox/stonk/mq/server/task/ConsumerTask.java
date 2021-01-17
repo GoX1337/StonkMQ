@@ -33,7 +33,12 @@ public class ConsumerTask implements StonkTask {
             try {
                 Message msg = this.queue.take();
                 out.println(msg);
-            } catch (InterruptedException e) {
+                String ack = in.readLine();
+                if(ack == null){
+                    System.out.println("Consumer disconnected");
+                    break;
+                }
+            } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
         }
