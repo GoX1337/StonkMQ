@@ -1,29 +1,17 @@
-package org.gox.stonk.mq.server.task;
+package org.gox.stonk.mq.server;
 
+import org.gox.stonk.mq.StonkMqServer;
 import org.gox.stonk.mq.message.Message;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 
-public class ProducerTask implements StonkTask {
+public class ProducerTask extends StonkTask {
 
-    private Socket clientSocket;
-    private BufferedReader in;
-    private PrintWriter out;
-    private final BlockingQueue<Message> queue;
-
-    public ProducerTask(Socket socket, BufferedReader in, BlockingQueue<Message> queue){
-        this.queue = queue;
-        this.clientSocket = socket;
-        try {
-            this.in = in;
-            this.out = new PrintWriter(clientSocket.getOutputStream(), true);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public ProducerTask(StonkMqServer stonkMqServer, Socket socket, BufferedReader in, BlockingQueue<Message> queue){
+        super("producer", stonkMqServer, queue, socket, in);
     }
 
     @Override
@@ -32,10 +20,14 @@ public class ProducerTask implements StonkTask {
             Thread.currentThread().setName("producer_" + Thread.currentThread().getId());
             while (true) {
                 String payload = in.readLine();
+                if(payload == null){
+                    stop();
+                    break;
+                }
                 String threadName = Thread.currentThread().getName();
                 Message msg = new Message(threadName, payload);
                 queue.put(msg);
-                out.println("ACK");
+                out.println("PUT_ACK");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -44,10 +36,5 @@ public class ProducerTask implements StonkTask {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public String getType() {
-        return "producer";
     }
 }

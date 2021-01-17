@@ -22,7 +22,7 @@ public class StronkMqProducer {
     public boolean sendMessage(String msg) throws IOException {
         out.println(msg);
         String response = in.readLine();
-        return "ACK".equals(response);
+        return "PUT_ACK".equals(response);
     }
 
     public static void main(String... args){

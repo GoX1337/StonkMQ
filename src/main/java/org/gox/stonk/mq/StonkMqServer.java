@@ -1,9 +1,9 @@
 package org.gox.stonk.mq;
 
 import org.gox.stonk.mq.message.Message;
-import org.gox.stonk.mq.server.task.ConsumerTask;
-import org.gox.stonk.mq.server.task.ProducerTask;
-import org.gox.stonk.mq.server.task.StonkTask;
+import org.gox.stonk.mq.server.ConsumerTask;
+import org.gox.stonk.mq.server.ProducerTask;
+import org.gox.stonk.mq.server.StonkTask;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -60,12 +60,26 @@ public class StonkMqServer {
         switch (in.readLine()){
             case "producer":
                 nbProducer++;
-                return new ProducerTask(socketClient, in, queue);
+                return new ProducerTask(this, socketClient, in, queue);
             case "consumer":
                 nbConsumer++;
-                return new ConsumerTask(socketClient, in, queue);
+                return new ConsumerTask(this, socketClient, in, queue);
             default: return null;
         }
+    }
+
+    public void disconnect(String type){
+        switch (type){
+            case "producer":
+                nbProducer--;
+                System.out.print("Producer disconnected");
+                break;
+            case "consumer":
+                nbConsumer--;
+                System.out.print("Consumer disconnected");
+                break;
+        }
+        System.out.println(" (" + nbProducer + " producers; " + nbConsumer + " consumers)");
     }
 
     public void start() {
