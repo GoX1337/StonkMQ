@@ -19,9 +19,12 @@ public class StronkMqProducer {
         out.println("producer");
     }
 
-    public boolean sendMessage(String msg) throws IOException {
+    public boolean sendMessage(String msg) throws IOException, InterruptedException {
         out.println(msg);
         String response = in.readLine();
+        if(response == null){
+            throw new InterruptedException("Connection server lost");
+        }
         return "PUT_ACK".equals(response);
     }
 

@@ -1,6 +1,6 @@
 package org.gox.stonk.mq;
 
-import org.gox.stonk.mq.message.Message;
+import org.gox.stonk.mq.queue.StonkQueue;
 import org.gox.stonk.mq.server.ConsumerTask;
 import org.gox.stonk.mq.server.ProducerTask;
 import org.gox.stonk.mq.server.StonkTask;
@@ -10,19 +10,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class StonkMqServer {
 
     private ServerSocket serverSocket;
     private ExecutorService executor;
-    private BlockingQueue<Message> queue;
+    private StonkQueue queue;
     private int nbConsumer = 0;
     private int nbProducer = 0;
 
     public StonkMqServer(int port, int maxNbThread, int maxMessageDepth){
         try {
-            queue = new ArrayBlockingQueue<>(maxMessageDepth);
+            queue = new StonkQueue(maxMessageDepth);
             executor = Executors.newFixedThreadPool(maxNbThread);
             serverSocket = new ServerSocket(port);
             System.out.println("Stonk MQ server listening on port " + port);
@@ -97,7 +98,7 @@ public class StonkMqServer {
 
     public static void main(String... args) {
         System.out.println("Starting Stonk MQ server...");
-        StonkMqServer stonkMqServer = new StonkMqServer(6666, 10, 10);
+        StonkMqServer stonkMqServer = new StonkMqServer(6666, 10, 10000);
         stonkMqServer.start();
     }
 }

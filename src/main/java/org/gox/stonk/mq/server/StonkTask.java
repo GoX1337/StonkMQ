@@ -1,13 +1,12 @@
 package org.gox.stonk.mq.server;
 
 import org.gox.stonk.mq.StonkMqServer;
-import org.gox.stonk.mq.message.Message;
+import org.gox.stonk.mq.queue.StonkQueue;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.concurrent.BlockingQueue;
 
 public abstract class StonkTask implements Runnable {
 
@@ -15,10 +14,10 @@ public abstract class StonkTask implements Runnable {
     private Socket clientSocket;
     protected BufferedReader in;
     protected PrintWriter out;
-    protected final BlockingQueue<Message> queue;
+    protected final StonkQueue queue;
     private final StonkMqServer stonkMqServer;
 
-    public StonkTask(String type, StonkMqServer stonkMqServer, BlockingQueue queue, Socket clientSocket, BufferedReader in) {
+    public StonkTask(String type, StonkMqServer stonkMqServer, StonkQueue queue, Socket clientSocket, BufferedReader in) {
         this.type = type;
         this.stonkMqServer = stonkMqServer;
         this.queue = queue;
